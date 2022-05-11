@@ -1,0 +1,8 @@
+springusermanagement\model\AddressBean.class
+springusermanagement\dao\UserDao.class
+springusermanagement\dao\UserDaoImpl.class
+springusermanagement\service\SignupServiceImpl.class
+springusermanagement\service\SignupService.class
+springusermanagement\controller\HomeController.class
+springusermanagement\model\UserBean.class
+springusermanagement\model\UserRoles.class
