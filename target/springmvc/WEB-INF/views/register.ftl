@@ -19,8 +19,8 @@
     
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link href="./css/register.css" rel="stylesheet" media="all">
-
 	<link href="./css/address.css" rel="stylesheet" media="all">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     
     <style>
 
@@ -170,23 +170,26 @@
         <div class="customer-form">
 
 
-            <form action="Signup" method="post" role="form" autocomplete="off" >
-                <#if user??>
-                <#list user.addresses as x>
+           
                     
                 <div id="main-container">
-                    
+                
+                <#if user??>
+                <#list user.addresses as x>
+                    <script>
+
+                    </script>
                     <div class="panel card container-item">
 
                         
                         <div class="panel-body">
                             <div class="panel-body">
-
+                                       
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="form-group d-none">
+                                       <div class="form-group d-none">
                                             <label class="control-label" for="address_id_0">Address line 1</label>
-                                            <input type="text" id="address_id_0" class="form-control" name="Address[0][address_id]" >
+                                            <input type="text" id="address_id_0" class="form-control" name="aid" value="<#if user?? >${x.aid}</#if>">
                                             <p class="help-block help-block-error"></p>
                                         </div>
                                         <div class="form-group">
@@ -223,11 +226,11 @@
                                         <div class="form-group">
                                             <label for="state_0">State</label>
                                             <select id="state_0" class="form-control" name="addresses[0].state" >
-												<option value="gujrat" <#if user?? & x.state=="gujrat"> selected </#if>> MP</option>
+												<option value="gujrat" <#if user?? & x.state=="gujrat"> selected </#if>> gujrat</option>
 												<option value="MP" <#if user?? & x.state=="MP"> selected </#if>> MP</option>
-												<option value="maharastra" <#if user?? & x.state=="maharastra"> selected </#if>> MP</option>
-												<option value="Delhi" <#if user?? & x.state=="Delhi"> selected </#if>> MP</option>
-												<option value="Rajasthan" <#if user?? & x.state=="Rajasthan"> selected </#if>> MP</option>
+												<option value="maharastra" <#if user?? & x.state=="maharastra"> selected </#if>> maharastra</option>
+												<option value="Delhi" <#if user?? & x.state=="Delhi"> selected </#if>> Delhi</option>
+												<option value="Rajasthan" <#if user?? & x.state=="Rajasthan"> selected </#if>> Rajasthan</option>
 												
 										</select>
                                                              
@@ -253,11 +256,10 @@
                         </div>
 
                     </div>
-                </div>
 
                 </#list>
                 <#else>
-                <div id="main-container">
+                
                     
                     <div class="panel card container-item">
 
@@ -269,7 +271,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group d-none">
                                             <label class="control-label" for="address_id_0">Address line 1</label>
-                                            <input type="text" id="address_id_0" class="form-control" name="Address[0][address_id]" >
+                                            <input type="text" id="address_id_0" class="form-control" name="aid" >
                                             <p class="help-block help-block-error"></p>
                                         </div>
                                         <div class="form-group">
@@ -336,8 +338,9 @@
                         </div>
 
                     </div>
-                </div>
+                
                 </#if>
+                </div>
                 <div class="card">
                     <div>
                        <div > <a type="button" class="btn btn-success btn-sm" id="add-more" onclick="return checkAddress()"   role="button"><i class="fa fa-plus"></i> Add more address</a></div>
@@ -345,9 +348,7 @@
                        <br>
                         <input type="submit" id="btn-submit" class="btn btn-primary btn-sm" value="Submit">
                     </div>
-                </div>
-            </form>
-            
+                </div> 
         </div>
     </div>
 </div>              
@@ -360,7 +361,7 @@
         </div>
     </div>  
 	
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
@@ -374,8 +375,7 @@
  
                 
 <script>
-
-
+   
     $('a#add-more').cloneData({
         mainContainerId: 'main-container', // Main container Should be ID
         cloneContainer: 'container-item', // Which you want to clone
@@ -392,9 +392,13 @@
         },
         beforeRender: function () {
             console.info(':: Before rendered callback called');
+             
         },
+           
         afterRender: function () {
             console.info(':: After rendered callback called');
+            
+                 
             //$(".selectpicker").selectpicker('refresh');
         },
         afterRemove: function () {

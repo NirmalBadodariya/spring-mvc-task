@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import springusermanagement.dao.UserDaoImpl;
 import springusermanagement.model.AddressBean;
+import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 import springusermanagement.model.UserRoles;
 
@@ -53,7 +54,16 @@ public class SignupServiceImpl {
     }
 
     public void updateUser(UserBean user) {
+
         userDaoimpl.updateuser(user);
+    }
+
+    public boolean checkForgotpassDetails(String dob, String securityAns) {
+        return userDaoimpl.checkForgotpassDetails(dob, securityAns);
+    }
+
+    public void changePass(ForgotPassBean forgotPass) {
+        userDaoimpl.changePass(forgotPass);
     }
 
 }

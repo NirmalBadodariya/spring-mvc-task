@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 import springusermanagement.model.UserRoles;
 import javax.persistence.*;
@@ -17,8 +20,6 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.Transactional;
 
 @Repository
 @Transactional
@@ -98,6 +99,31 @@ public class UserDaoImpl<T> {
 
     public void updateuser(UserBean user) {
         hibernateTemplate.merge(user);
+    }
+
+    public boolean checkForgotpassDetails(String dob, String securityAns) {
+        boolean isValid = false;
+        String QUERY = " from UserBean as o where o.dob=?0 and o.securityAns=?1";
+        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY).setParameter(0, dob)
+                .setParameter(1, securityAns).list();
+
+        if ((list != null) && (list.size() > 0)) {
+            isValid = true;
+        }
+        return isValid;
+    }
+
+    @Transactional
+    public void changePass(ForgotPassBean forgotPass) {
+        Session session = hibernateTemplate.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        Query q = session.createQuery("update UserBean set pass=:newPass where dob=:dob and securityAns=:securityAns")
+                .setParameter("newPass", forgotPass.getNewPass())
+                .setParameter("dob", forgotPass.getDob())
+                .setParameter("securityAns", forgotPass.getSecurityAns());
+        
+        q.executeUpdate();
+        tx.commit();
     }
 
 }

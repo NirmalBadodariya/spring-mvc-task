@@ -45,9 +45,11 @@
  */
 
         (function ($) {
+          
             $.fn.cloneData = function (options, callback) {
               var settings = jQuery.extend(
                 {
+                  
                   mainContainerId: "clone-container",
                   cloneContainer: "clone-item",
                   excludeHTML: ".exclude",
@@ -71,7 +73,8 @@
                   init: function () {},
                   complete: function () {},
                   beforeRender: function () {},
-                  afterRender: function () {},
+                  afterRender: function () {
+                  },
                   beforeRemove: function () {},
                   afterRemove: function () {},
                 },

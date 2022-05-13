@@ -1,6 +1,7 @@
 package springusermanagement.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.transaction.HeuristicMixedException;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import springusermanagement.model.AddressBean;
+import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 import springusermanagement.service.SignupServiceImpl;
 
@@ -31,7 +34,7 @@ public class HomeController {
     @Autowired
     private SignupServiceImpl signupServiceImpl;
 
-    @RequestMapping("/")
+    @RequestMapping(path ={ "/" ,"/index" })
     public String loginPage() {
         return "index";
     }
@@ -47,17 +50,34 @@ public class HomeController {
         return "forgotpass";
     }
 
+    @RequestMapping("/userHome")
+    public String userHome() {
+        return "userHome";
+    }
+
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
-    public String Signup(@ModelAttribute UserBean user, HttpSession session) {
+    public String Signup(@ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id) {
         session.setAttribute("user", user);
-        // user.setId(id);
-        // System.out.println(user.getEmail());
+
         if (user.getId() != 0) {
 
-            System.out.println(user.getId());
+            List<AddressBean> addresses = user.getAddresses();
+            for (int i = 0; i < id.length; i++) {
+                System.out.println(id[i]);
+                if (!id[i].isEmpty()) {
+                    int Addressid = Integer.parseInt(id[i]);
+                    addresses.get(i).setAid(Addressid);
+
+                }
+            }
+            System.err.println("Update User");
+            for (AddressBean address : user.getAddresses()) {
+                address.setUserBean(user);
+            }
             signupServiceImpl.updateUser(user);
+
         } else {
-            System.out.println(user);
+            System.err.println("New User");
             signupServiceImpl.addNewUser(user);
         }
         return "userHome";
@@ -69,7 +89,7 @@ public class HomeController {
         session.setAttribute("email", email);
         if (isUserFound == true) {
 
-            return "userHome";
+            return "redirect:userHome";
         } else {
             return "index";
         }
@@ -112,6 +132,39 @@ public class HomeController {
         // System.err.println("mail: " + user.getEmail());
 
         return "redirect:register";
+    }
+
+    @RequestMapping(path = "/ForgotPass", method = RequestMethod.POST)
+    public String forgotPass(@RequestParam String dob, @RequestParam String securityAns, HttpSession session) {
+        boolean isValid = signupServiceImpl.checkForgotpassDetails(dob, securityAns);
+        session.setAttribute("dob", dob);
+        session.setAttribute("securityAns", securityAns);
+        if (isValid == true) {
+
+            return "changePass";
+        } else {
+            return "forgotpass";
+        }
+    }
+
+    @RequestMapping(path = "/ChangePass", method = RequestMethod.POST)
+    public String changePass(@RequestParam String newPass, HttpSession session) {
+        ForgotPassBean forgotPass = new ForgotPassBean();
+        String dob = (String) session.getAttribute("dob");
+        String securityAns = (String) session.getAttribute("securityAns");
+        forgotPass.setDob(dob);
+        forgotPass.setNewPass(newPass);
+        forgotPass.setSecurityAns(securityAns);
+        signupServiceImpl.changePass(forgotPass);
+
+        return "index";
+
+    }
+
+    @RequestMapping("/Logout")
+    public String logOut(HttpSession session) {
+        session.invalidate();
+        return "redirect:index";
     }
 
 }

@@ -25,7 +25,7 @@
                         </div>
                         <div class="input-group">
                                 <p>What was your first school name?</p>
-                                <input  type="text" name="SecurityAns">
+                                <input  type="text" name="securityAns">
                           </div>
                       </div>
                       <div class="form-group">

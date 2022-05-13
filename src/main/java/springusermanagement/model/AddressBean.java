@@ -18,7 +18,7 @@ public class AddressBean {
     private String city;
     private String state;
     private int pincode;
-    
+
     @ManyToOne
     private UserBean userBean;
 

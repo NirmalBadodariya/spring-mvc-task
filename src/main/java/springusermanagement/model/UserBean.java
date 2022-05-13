@@ -34,13 +34,13 @@ public class UserBean {
     public String getSecurityAns() {
         return securityAns;
     }
-    
+
     public void setSecurityAns(String securityAns) {
         this.securityAns = securityAns;
     }
-
+    
     // private String security_ans;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressBean> addresses;
 
     @OneToMany(cascade = CascadeType.ALL)
