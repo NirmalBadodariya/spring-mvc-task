@@ -16,19 +16,30 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.google.gson.annotations.Expose;
+
 @Entity
 @Table(name = "users")
 public class UserBean {
+    @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    @Expose
     private String firstName;
+    @Expose
     private String lastName;
+    @Expose
     private String email;
+    @Expose
     private String phone;
+    @Expose
     private String gender;
+    @Expose
     private String dob;
+    @Expose
     private String pass;
+    @Expose
     private String securityAns;
 
     public String getSecurityAns() {
@@ -38,13 +49,12 @@ public class UserBean {
     public void setSecurityAns(String securityAns) {
         this.securityAns = securityAns;
     }
-    
+
     // private String security_ans;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressBean> addresses;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "uid")
     private List<UserRoles> roles;
 
     public List<UserRoles> getRoles() {

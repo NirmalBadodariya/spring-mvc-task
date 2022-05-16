@@ -1,6 +1,7 @@
 package springusermanagement.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -24,18 +25,22 @@ public class SignupServiceImpl {
 
     public int addNewUser(UserBean user) {
 
+        List<UserRoles> roles = user.getRoles();
         for (AddressBean address : user.getAddresses()) {
             address.setUserBean(user);
         }
-        // for (UserRoles role : user.getRoles()) {
-        // role.setUser(user);
-        // }
-
+        for (UserRoles role : roles) {
+            role.setUser(user);
+        }
+        user.setRoles(roles);
         return (int) userDaoimpl.addNewUser(user);
     }
 
-    public boolean checkUser(String email, String pass) {
-        return userDaoimpl.checkUser(email, pass);
+    public int checkUser(String email, String pass) {
+        UserBean user = userDaoimpl.getLoggedinUserDetails(email);
+        user.setPass(pass);
+        System.out.println("id:  " + user.getId());
+        return userDaoimpl.checkUser(user);
     }
 
     public ArrayList getUserDetails() {

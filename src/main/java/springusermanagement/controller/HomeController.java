@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import springusermanagement.model.AddressBean;
 import springusermanagement.model.ForgotPassBean;
@@ -34,7 +35,7 @@ public class HomeController {
     @Autowired
     private SignupServiceImpl signupServiceImpl;
 
-    @RequestMapping(path ={ "/" ,"/index" })
+    @RequestMapping(path = { "/", "/index" })
     public String loginPage() {
         return "index";
     }
@@ -55,12 +56,19 @@ public class HomeController {
         return "userHome";
     }
 
+    @RequestMapping("/adminHome")
+    public String adminHome() {
+        return "adminHome";
+    }
+
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
     public String Signup(@ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id) {
         session.setAttribute("user", user);
-
+        int usertypeforedit = 0;
         if (user.getId() != 0) {
 
+            usertypeforedit = (int) session.getAttribute("role");
+            System.out.println("user: " + usertypeforedit);
             List<AddressBean> addresses = user.getAddresses();
             for (int i = 0; i < id.length; i++) {
                 System.out.println(id[i]);
@@ -80,16 +88,28 @@ public class HomeController {
             System.err.println("New User");
             signupServiceImpl.addNewUser(user);
         }
-        return "userHome";
-    }
-
-    @RequestMapping(path = "/Login", method = RequestMethod.POST)
-    public String Login(@RequestParam String email, @RequestParam String pass, HttpSession session) {
-        boolean isUserFound = signupServiceImpl.checkUser(email, pass);
-        session.setAttribute("email", email);
-        if (isUserFound == true) {
+        if (usertypeforedit == 0) {
 
             return "redirect:userHome";
+        } else if (usertypeforedit == 2) {
+            return "redirect:adminHome";
+
+        }
+        return null;
+    }
+    
+    @RequestMapping(path = "/Login", method = RequestMethod.POST)
+    public String Login(@RequestParam String email, @RequestParam String pass, HttpSession session) {
+        int usertype = signupServiceImpl.checkUser(email, pass);
+        session.setAttribute("email", email);
+        if (usertype == 1) {
+            session.setAttribute("role", 0);
+            return "redirect:userHome";
+
+        } else if (usertype == 2) {
+            session.setAttribute("role", 2);
+            return "redirect:adminHome";
+
         } else {
             return "index";
         }
@@ -102,7 +122,7 @@ public class HomeController {
         ArrayList<UserBean> userDetails = signupServiceImpl.getUserDetails();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
         String JSONObject = gson.toJson(userDetails);
         return JSONObject;
     }
@@ -124,7 +144,9 @@ public class HomeController {
 
     @RequestMapping(path = "/EditDetails")
     public String editDetails(HttpSession session) {
+
         if (session.getAttribute("email") != null) {
+            System.out.println("email got" + session.getAttribute("email"));
             String email = (String) session.getAttribute("email");
             UserBean userDetails = signupServiceImpl.getLoggedinUserDetails(email);
             session.setAttribute("user", userDetails);
@@ -167,4 +189,10 @@ public class HomeController {
         return "redirect:index";
     }
 
+    @RequestMapping("/emailFromUser")
+    public ModelAndView emailFromUser(@RequestParam("email") String userEmail, HttpSession session) {
+        session.setAttribute("email", userEmail);
+        System.out.println("usersideemailser" + userEmail);
+        return new ModelAndView("redirect:/EditDetails");
+    }
 }

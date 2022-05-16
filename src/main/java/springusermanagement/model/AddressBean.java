@@ -1,5 +1,6 @@
 package springusermanagement.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +20,7 @@ public class AddressBean {
     private String state;
     private int pincode;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private UserBean userBean;
 
     public UserBean getUserBean() {

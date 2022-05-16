@@ -67,7 +67,7 @@
 
           </div>
         </div>
-
+          
       </header>
     
  <div id="tablediv">
@@ -131,9 +131,8 @@ function DeleteUser(userId) {
 
 function EditUserDetails(email) {
     alert("email:"+ email);
-    // console.log("firstname"+ email);
-    $.post("SessionStore",{"email": email},function() {
-        window.location.href = "EditDetails"
+    $.post("emailFromUser",{"email": email},function() {
+        window.location.href = "register"
     });
         
 }  

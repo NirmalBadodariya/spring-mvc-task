@@ -11,15 +11,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Entity
 @Table(name = "roles")
 public class UserRoles {
     @Id
     @GeneratedValue
     private int id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private UserBean user;
+    
     private int role = 1;
+
     
     @Override
     public String toString() {

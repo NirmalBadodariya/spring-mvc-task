@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import springusermanagement.encryotion.AES;
 import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 import springusermanagement.model.UserRoles;
@@ -47,6 +48,9 @@ public class UserDaoImpl<T> {
     @Transactional
     public T addNewUser(UserBean user) {
 
+        final String secretKey = "ssshhhhhhhhhhh!!!!";
+        String encryptedString = AES.encrypt(user.getPass(), secretKey);
+        user.setPass(encryptedString);
         // String SQL_QUERY = " insert into UserRoles (role) values (:givenrole)";
         // hibernateTemplate.getSessionFactory().openSession().createSQLQuery(SQL_QUERY).setParameter("givenrole",
         // 1)
@@ -60,18 +64,33 @@ public class UserDaoImpl<T> {
         return (T) hibernateTemplate.save(user);
     }
 
-    public boolean checkUser(T email, T pass) {
-        boolean userFound = false;
+    public int checkUser(UserBean user) {
+        System.out.println("uid: " + user.getId());
+        String QUERY1 = " from UserRoles  where user_id=" + user.getId();
+        System.out.println(QUERY1);
+        List<UserRoles> role = (List<UserRoles>) hibernateTemplate.find(QUERY1);
+        System.out.println("eolw: " + role.get(0).getRole());
+
+        final String secretKey = "ssshhhhhhhhhhh!!!!";
+        String encryptedString = AES.encrypt(user.getPass(), secretKey);
+        System.out.println(encryptedString);
+        System.out.println(user.getEmail());
+
+        int usertype = 0;
         String QUERY = " from UserBean as o where o.email=?0 and o.pass=?1";
-        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY).setParameter(0, email)
-                .setParameter(1, pass).list();
+        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY)
+                .setParameter(0, user.getEmail())
+                .setParameter(1, encryptedString).list();
         // Query query = session.createQuery(SQL_QUERY);
         // List list = (List) hibernateTemplate.find(SQL_QUERY, email, pass);
 
-        if ((list != null) && (list.size() > 0)) {
-            userFound = true;
+        if ((list != null) && (list.size() > 0) && role.get(0).getRole() == 1) {
+            usertype = 1;
+        } else if ((list != null) && (list.size() > 0) && role.get(0).getRole() == 2) {
+            usertype = 2;
+
         }
-        return userFound;
+        return usertype;
     }
 
     public ArrayList<UserBean> getUserDetails() {
@@ -79,6 +98,7 @@ public class UserDaoImpl<T> {
         Session session = hibernateTemplate.getSessionFactory().openSession();
         Query query = session.createQuery("from UserBean");
         userDetails = (ArrayList<UserBean>) query.getResultList();
+
         return userDetails;
     }
 
@@ -88,12 +108,17 @@ public class UserDaoImpl<T> {
         hibernateTemplate.delete(user);
 
     }
-
+    
     public UserBean getLoggedinUserDetails(String email) {
         ArrayList<UserBean> userDetails = new ArrayList<>();
         Session session = hibernateTemplate.getSessionFactory().openSession();
         Query query = session.createQuery("from UserBean where email=:email").setParameter("email", email);
         userDetails = (ArrayList<UserBean>) query.getResultList();
+        System.out.println("pass: " + userDetails.get(0).getPass());
+        final String secretKey = "ssshhhhhhhhhhh!!!!";
+        String decryptedPass = AES.decrypt(userDetails.get(0).getPass(), secretKey);
+        userDetails.get(0).setPass(decryptedPass);
+        System.out.println("decc: " + userDetails.get(0).getPass());
         return userDetails.get(0);
     }
 
@@ -117,11 +142,14 @@ public class UserDaoImpl<T> {
     public void changePass(ForgotPassBean forgotPass) {
         Session session = hibernateTemplate.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
+        final String secretKey = "ssshhhhhhhhhhh!!!!";
+        String encryptedString = AES.encrypt(forgotPass.getNewPass(), secretKey);
+
         Query q = session.createQuery("update UserBean set pass=:newPass where dob=:dob and securityAns=:securityAns")
-                .setParameter("newPass", forgotPass.getNewPass())
+                .setParameter("newPass", encryptedString)
                 .setParameter("dob", forgotPass.getDob())
                 .setParameter("securityAns", forgotPass.getSecurityAns());
-        
+
         q.executeUpdate();
         tx.commit();
     }

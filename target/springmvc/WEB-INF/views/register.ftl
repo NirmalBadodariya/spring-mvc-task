@@ -48,6 +48,9 @@
             border-radius: .25rem;
             transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
         }
+        label.error{
+            color:red;
+        }
         </style>
 
 </head>
@@ -65,7 +68,7 @@
                 
                 <#--  <p style="text-align:center"><c:out value="${errMsg}"/></p>  -->
                 <div class="card-body">
-                    <form action="Signup" method="POST"  onsubmit="return validateform()">
+                    <form action="Signup" method="POST" id="register">
                         <div class="form-row m-b-55">
                             <div class="name">Name</div>
                             <div class="value">
@@ -75,7 +78,10 @@
                                             <input class="input--style-5" type="text" name="id" id="id" value="<#if user?? && user.id??>${user.id}<#else>0</#if>">
                                             <label class="label--desc">first name</label>
                                         </div>
-
+                                        <div class="input-group-desc d-none">
+                                            <input class="input--style-5" type="text" name="roles[0].role" id="id" value="1">
+                                            <label class="label--desc">first name</label>
+                                        </div>
                                         <div class="input-group-desc">
                                             <input class="input--style-5" type="text" name="firstName" id="firstName" value="<#if user?? && user.firstName??>${user.firstName}</#if>">
                                             <label class="label--desc">first name</label>
@@ -116,8 +122,8 @@
                         
                         <div class="form-row p-t-20">
                             <div class="name">Gender</div>
-                            Male:<input type="radio" name="gender" checked value="M" id="Gmale">
-                           Female:<input type="radio" name="gender" value="F" id="Gfemale">
+                            Male:<input type="radio" name="gender" value="M" id="Gmale" <#if user?? && user.gender=="M">checked="checked"</#if>>
+                           Female:<input type="radio" name="gender" value="F" id="Gfemale" <#if user?? && user.gender=="F">checked="checked"</#if>>
                         </div>
                         <div class="form-row m-b-55">
                             <div class="name">DOB</div>
@@ -343,7 +349,7 @@
                 </div>
                 <div class="card">
                     <div>
-                       <div > <a type="button" class="btn btn-success btn-sm" id="add-more" onclick="return checkAddress()"   role="button"><i class="fa fa-plus"></i> Add more address</a></div>
+                       <div > <a type="button" class="btn btn-success btn-sm" id="add-more"   role="button"><i class="fa fa-plus"></i> Add more address</a></div>
                        <div id="add-more-hidden" class="d-none"> <div type="button" class="btn btn-success btn-sm" ><i class="fa fa-plus"></i> Add more address</div></div>
                        <br>
                         <input type="submit" id="btn-submit" class="btn btn-primary btn-sm" value="Submit">
@@ -368,21 +374,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.3.2/select2.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.js"></script>
 <script src="https://cdn.ckeditor.com/4.5.1/standard/ckeditor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script>
     <#include "resources/js/cloneData.js"  />
 </script>
-
- 
-                
 <script>
-   
-    $('a#add-more').cloneData({
+
+ $('a#add-more').cloneData({
         mainContainerId: 'main-container', // Main container Should be ID
         cloneContainer: 'container-item', // Which you want to clone
         removeButtonClass: 'remove-item', // Remove button for remove cloned HTML
         removeConfirm: true, // default true confirm before delete clone item
         removeConfirmMessage: 'Are you sure want to delete?', // confirm delete message
-        clearInputs: false,
         //append: '<a href="javascript:void(0)" class="remove-item btn btn-sm btn-danger remove-social-media">Remove</a>', // Set extra HTML append to clone HTML
         minLimit: 1, // Default 1 set minimum clone HTML required
         maxLimit: 0, // Default unlimited or set maximum limit of clone HTML
@@ -392,13 +398,9 @@
         },
         beforeRender: function () {
             console.info(':: Before rendered callback called');
-             
         },
-           
         afterRender: function () {
             console.info(':: After rendered callback called');
-            
-                 
             //$(".selectpicker").selectpicker('refresh');
         },
         afterRemove: function () {
@@ -409,57 +411,11 @@
         }
 
     });
-    </script>
+</script>
 <script>
-		function validateform() {
-			
-			// var fname = $("#firstname").val();
-            var lname = $("#lastname").val();
-            var email = $("#email").val();
-            var phone = $("#phone").val();
-            
-            var dob = $("#dob").val();
-            var pass = $("#pass").val();
-            var securityans = $("#securityans").val();
-            var genderselect = $("input[type = 'radio']:checked"); 
-            var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-            var passcheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-            
-            
-
-
-			if ( lname != "" && email != "" && phone !="" && genderselect.length > 0 && dob != "" && pass != "" && securityans != "") {
-                if ( lname.length>10) {
-                    alert("Too long name");
-                    return false;
-                }
-                else if(!filter.test(email)){
-                    alert("Not a valid email");
-                    return false;
-                }
-                else if(phone.length!=10){
-                    alert("phone number must have 10 numbers");
-                    return false;
-                }
-                else if(!passcheck.test(pass)){
-                    alert("Password must contain at least 1 capital letter,\n\n1 small letter, 1 number and 6 letters");
-                    return false;
-                }
-                  
-              
-                else{
-                    
-                    return true;
-                }
-
-			} else {
-				alert("No Fields should be empty");
-				return false;
-			}
-            
-		}
-        var count =1;
-	</script>
+    <#include "resources/js/Validation.js"  />
+</script>   
+ 
 </body>
 
 </html>
