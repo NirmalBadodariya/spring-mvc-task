@@ -21,7 +21,7 @@ public class SessionManagementFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
-
+                
         if (session == null) {
             response.sendRedirect("index");
             System.out.println("null session");

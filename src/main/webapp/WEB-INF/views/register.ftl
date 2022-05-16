@@ -68,7 +68,7 @@
                 
                 <#--  <p style="text-align:center"><c:out value="${errMsg}"/></p>  -->
                 <div class="card-body">
-                    <form action="Signup" method="POST" id="register">
+                    <form action="Signup" method="POST" id="register" enctype="multipart/form-data">
                         <div class="form-row m-b-55">
                             <div class="name">Name</div>
                             <div class="value">
@@ -153,7 +153,19 @@
                             </div>
                         </div>
                         
-                                            
+                         <div class="form-row m-b-55">
+                            <div class="name">Profile image</div>
+                            <div class="value">
+                                <div class="row row-refine">
+                                    <div class="col-9">
+                                        <div class="input-group-desc">
+                                            <input type="file" id="profilepic" name="profilepic" accept="image/*">
+                                            <img src="data:image/jpg;base64,<#if user??>${user.profilepic}</#if>" width="240" height="300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                   
                         
 
                         <div class="form-row m-b-55">
@@ -267,7 +279,7 @@
                 <#else>
                 
                     
-                    <div class="panel card container-item">
+                    <div class="panel card container-item"> 
 
                         
                         <div class="panel-body">

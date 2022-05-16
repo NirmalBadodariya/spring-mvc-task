@@ -18,7 +18,7 @@ import springusermanagement.model.UserBean;
 import springusermanagement.model.UserRoles;
 
 @Service
-public class SignupServiceImpl {
+public class SignupServiceImpl implements SignupService {
 
     @Autowired
     private UserDaoImpl userDaoimpl;
@@ -69,6 +69,14 @@ public class SignupServiceImpl {
 
     public void changePass(ForgotPassBean forgotPass) {
         userDaoimpl.changePass(forgotPass);
+    }
+
+    public ArrayList getRecentUsersList() {
+        return userDaoimpl.getRecentUsersList();
+    }
+
+    public boolean checkEmail(String email) {
+        return userDaoimpl.checkEmail(email);
     }
 
 }

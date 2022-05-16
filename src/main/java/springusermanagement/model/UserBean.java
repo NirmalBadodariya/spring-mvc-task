@@ -5,18 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.google.gson.annotations.Expose;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "users")
@@ -41,6 +45,18 @@ public class UserBean {
     private String pass;
     @Expose
     private String securityAns;
+    @Lob
+    @Expose
+    @Column(nullable = true)
+    private String profilepic;
+
+    public String getProfilepic() {
+        return profilepic;
+    }
+
+    public void setProfilepic(String profilepic) {
+        this.profilepic = profilepic;
+    }
 
     public String getSecurityAns() {
         return securityAns;
@@ -93,9 +109,9 @@ public class UserBean {
 
     @Override
     public String toString() {
-        return "UserBean [SecurityAns=" + securityAns + ", addresses=" + addresses + ", dob=" + dob + ", email=" + email
-                + ", firstName=" + firstName + ", gender=" + gender + ", id=" + id + ", lastName=" + lastName
-                + ", pass=" + pass + ", phone=" + phone + ", roles=" + roles + "]";
+        return "UserBean [addresses=" + addresses + ", dob=" + dob + ", email=" + email + ", firstName=" + firstName
+                + ", gender=" + gender + ", id=" + id + ", lastName=" + lastName + ", pass=" + pass + ", phone=" + phone
+                + ", roles=" + roles + ", securityAns=" + securityAns + "]";
     }
 
     public String getPass() {

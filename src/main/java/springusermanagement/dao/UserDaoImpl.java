@@ -1,13 +1,16 @@
 package springusermanagement.dao;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +27,7 @@ import javax.transaction.SystemException;
 
 @Repository
 @Transactional
-public class UserDaoImpl<T> {
+public class UserDaoImpl<T> implements UserDao<T> {
 
     @Autowired
     protected SessionFactory factory;
@@ -108,7 +111,7 @@ public class UserDaoImpl<T> {
         hibernateTemplate.delete(user);
 
     }
-    
+
     public UserBean getLoggedinUserDetails(String email) {
         ArrayList<UserBean> userDetails = new ArrayList<>();
         Session session = hibernateTemplate.getSessionFactory().openSession();
@@ -152,6 +155,40 @@ public class UserDaoImpl<T> {
 
         q.executeUpdate();
         tx.commit();
+    }
+
+    public ArrayList<UserBean> getRecentUsersList() {
+        Session session = hibernateTemplate.getSessionFactory().openSession();
+        ArrayList<UserBean> userDetails = new ArrayList<>();
+
+        // Get All Employees
+        Transaction tx = session.beginTransaction();
+        SQLQuery query = session
+                .createSQLQuery("select * from users where CreatedTime  >= NOW() - INTERVAL 1 DAY");
+        List<Object[]> rows = query.list();
+        int i = 0;
+        for (Object[] row : rows) {
+            userDetails.get(i).setId(Integer.parseInt(row[0].toString()));
+            userDetails.get(i).setEmail(row[1].toString());
+            userDetails.get(i).setFirstName(row[2].toString());
+            System.out.println(userDetails);
+        }
+        tx.commit();
+        return userDetails;
+    }
+
+    public boolean checkEmail(String email) {
+        boolean emailExists = false;
+        String QUERY = " from UserBean as o where o.email=?0";
+        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY)
+                .setParameter(0, email).list();
+        // Query query = session.createQuery(SQL_QUERY);
+        // List list = (List) hibernateTemplate.find(SQL_QUERY, email, pass);
+
+        if ((list != null) && (list.size() > 0)) {
+            emailExists = true;
+        }
+        return emailExists;
     }
 
 }

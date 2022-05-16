@@ -15,6 +15,16 @@ $("#register").validate({
         email: {
             required: true,
             validateEmail: true,
+            "remote": {
+                url: 'CheckEmailAvailability',
+                type: "post",
+                data: {
+                    email: function () {
+                        return $("#email").val();
+                    }
+                }
+            }
+
         },
         phone: {
             required: true,

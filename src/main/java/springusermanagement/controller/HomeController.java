@@ -1,8 +1,10 @@
 package springusermanagement.controller;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -16,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import springusermanagement.model.AddressBean;
@@ -62,11 +67,18 @@ public class HomeController {
     }
 
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
-    public String Signup(@ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id) {
+    public String Signup(@ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id,
+            @RequestParam("profilepic") MultipartFile profilepic)
+            throws Exception {
         session.setAttribute("user", user);
+
+        String profile = Base64.getEncoder().encodeToString(profilepic.getBytes());
+        if(profile!=null){
+            user.setProfilepic(profile);
+        }
         int usertypeforedit = 0;
         if (user.getId() != 0) {
-
+            
             usertypeforedit = (int) session.getAttribute("role");
             System.out.println("user: " + usertypeforedit);
             List<AddressBean> addresses = user.getAddresses();
@@ -97,7 +109,7 @@ public class HomeController {
         }
         return null;
     }
-    
+
     @RequestMapping(path = "/Login", method = RequestMethod.POST)
     public String Login(@RequestParam String email, @RequestParam String pass, HttpSession session) {
         int usertype = signupServiceImpl.checkUser(email, pass);
@@ -194,5 +206,31 @@ public class HomeController {
         session.setAttribute("email", userEmail);
         System.out.println("usersideemailser" + userEmail);
         return new ModelAndView("redirect:/EditDetails");
+    }
+
+    @RequestMapping("/torecentlyregistered")
+    public ModelAndView torecentlyregistered() {
+        return new ModelAndView("redirect:/getRecentUsers");
+    }
+
+    @RequestMapping("/getRecentUsers")
+    public String getRecentUsers() {
+        ArrayList<UserBean> recentUsers = signupServiceImpl.getRecentUsersList();
+        System.out.println(recentUsers.get(0).getEmail());
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+        String JSONObject = gson.toJson(recentUsers);
+        return JSONObject;
+    }
+
+    @RequestMapping("/CheckEmailAvailability")
+    @ResponseBody
+    public String CheckEmailAvailability(@RequestParam("email") String email) {
+        boolean emailExists = signupServiceImpl.checkEmail(email);
+        if (emailExists) {
+            return "false";
+        } else {
+            return "true";
+        }
     }
 }
