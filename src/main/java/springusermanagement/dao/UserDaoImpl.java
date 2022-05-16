@@ -166,12 +166,18 @@ public class UserDaoImpl<T> implements UserDao<T> {
         SQLQuery query = session
                 .createSQLQuery("select * from users where CreatedTime  >= NOW() - INTERVAL 1 DAY");
         List<Object[]> rows = query.list();
-        int i = 0;
-        for (Object[] row : rows) {
-            userDetails.get(i).setId(Integer.parseInt(row[0].toString()));
-            userDetails.get(i).setEmail(row[1].toString());
-            userDetails.get(i).setFirstName(row[2].toString());
-            System.out.println(userDetails);
+        // System.out.println(Integer.parseInt(rows.get(0)[0].toString()));
+        // System.out.println(rows.get(0)[1].toString());
+        // System.out.println(rows.get(0)[2].toString());
+        // System.out.println(rows.size());
+        // userDetails.get(i).setId(Integer.parseInt(rows.get(i)[0].toString()));
+
+        for (int i = 0; i < rows.size(); i++) {
+            UserBean user = new UserBean();
+            user.setId(Integer.parseInt(rows.get(i)[0].toString()));
+            user.setEmail(rows.get(i)[2].toString());
+            user.setFirstName(rows.get(i)[3].toString());
+            userDetails.add(user);
         }
         tx.commit();
         return userDetails;

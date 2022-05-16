@@ -11,7 +11,7 @@ import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 
 public interface UserDao<T> {
-
+    
     public T addNewUser(UserBean user);
 
     public int checkUser(UserBean user);

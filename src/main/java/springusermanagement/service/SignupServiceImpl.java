@@ -11,6 +11,7 @@ import javax.transaction.SystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import springusermanagement.dao.UserDao;
 import springusermanagement.dao.UserDaoImpl;
 import springusermanagement.model.AddressBean;
 import springusermanagement.model.ForgotPassBean;
@@ -21,8 +22,9 @@ import springusermanagement.model.UserRoles;
 public class SignupServiceImpl implements SignupService {
 
     @Autowired
-    private UserDaoImpl userDaoimpl;
+    private UserDao userDaoimpl;
 
+    @Override
     public int addNewUser(UserBean user) {
 
         List<UserRoles> roles = user.getRoles();

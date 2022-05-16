@@ -58,7 +58,7 @@
               <nav class="site-navigation text-left mr-auto " role="navigation">
                 <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
                   <li><a href="SessionStore">AddNewUser</a></li>
-                  <li><a href="torecentlyregistered">AddNewUser</a></li>
+                  <li><a href="torecentlyregistered">newUsersList</a></li>
                   <li><a href="Logout">Logout</a></li>
 
                 </ul>

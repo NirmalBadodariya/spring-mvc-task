@@ -159,7 +159,7 @@
                                 <div class="row row-refine">
                                     <div class="col-9">
                                         <div class="input-group-desc">
-                                            <input type="file" id="profilepic" name="profilepic" accept="image/*">
+                                            <input type="file" id="profilepic" name="profileimage" accept="image/*">
                                             <img src="data:image/jpg;base64,<#if user??>${user.profilepic}</#if>" width="240" height="300"/>
                                         </div>
                                     </div>

@@ -11,6 +11,10 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
     <#--  <link rel="stylesheet" href="./css/adminHome.css">  -->
 
     <title>Website Menu #10</title>
@@ -20,7 +24,7 @@
   </head>
   <body>
 
-
+  
     <div class="site-mobile-menu site-navbar-target">
         <div class="site-mobile-menu-header">
           <div class="site-mobile-menu-close mt-3">
@@ -42,7 +46,7 @@
                 <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
                   <li class="active"><a href="adminHome1.jsp" class="nav-link">Home</a></li>
                   <li><a href="EditDetails">Profile</a></li>
-                  <li><button id="showUserDetails" class="btn btn-info">showUserDetails</button></li>
+                  <li><button id="showUserDetails" class="btn btn-info">UserList</button></li>
                 </ul>
               </nav>
             </div>
@@ -52,18 +56,7 @@
               </div>
                 
 
-              <div class="ml-auto toggle-button d-inline-block d-lg-none"><a href="#" class="site-menu-toggle py-5 js-menu-toggle text-black"><span class="icon-menu h3 text-black"></span></a></div>
-            </div>
-            <div class="col-lg-4">
-              <nav class="site-navigation text-left mr-auto " role="navigation">
-                <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                  <li><a href="SessionStore">AddNewUser</a></li>
-                  <li><a href="torecentlyregistered">AddNewUser</a></li>
-                  <li><a href="Logout">Logout</a></li>
-
-                </ul>
-              </nav>
-            </div>
+              
             
 
           </div>
@@ -101,8 +94,12 @@ $(document).ready(function() {
                     columns: [
                         { data: 'id'},
                         { data: 'firstName'},
-                        { data: 'email'},
+                        { data: 'email'}
                     ],
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
 
                 });
             }

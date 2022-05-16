@@ -14,7 +14,7 @@ import springusermanagement.model.UserBean;
 
 public interface SignupService {
     public int addNewUser(UserBean user);
-
+    
     public int checkUser(String email, String pass);
     public ArrayList getUserDetails();
     public void deleteUser(int userId) throws SecurityException, RollbackException, HeuristicMixedException, HeuristicRollbackException, SystemException;
@@ -23,4 +23,6 @@ public interface SignupService {
     public void changePass(ForgotPassBean forgotPass);
     public ArrayList getRecentUsersList();
     public boolean checkEmail(String email);
+
+    public UserBean getLoggedinUserDetails(String email);
 }

@@ -14,6 +14,7 @@ import javax.validation.constraints.Email;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,12 +34,16 @@ import org.springframework.web.servlet.ModelAndView;
 import springusermanagement.model.AddressBean;
 import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
+import springusermanagement.service.SignupService;
 import springusermanagement.service.SignupServiceImpl;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 @Controller
 public class HomeController {
+    Logger log = Logger.getLogger(HomeController.class.getName());
     @Autowired
-    private SignupServiceImpl signupServiceImpl;
+    private SignupService signupServiceImpl;
 
     @RequestMapping(path = { "/", "/index" })
     public String loginPage() {
@@ -56,7 +61,7 @@ public class HomeController {
         return "forgotpass";
     }
 
-    @RequestMapping("/userHome")
+    @RequestMapping({ "/userHome", "/backToHome" })
     public String userHome() {
         return "userHome";
     }
@@ -68,17 +73,17 @@ public class HomeController {
 
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
     public String Signup(@ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id,
-            @RequestParam("profilepic") MultipartFile profilepic)
+            @RequestParam("profileimage") MultipartFile profilepic)
             throws Exception {
         session.setAttribute("user", user);
 
         String profile = Base64.getEncoder().encodeToString(profilepic.getBytes());
-        if(profile!=null){
+        if (profile != null) {
             user.setProfilepic(profile);
         }
         int usertypeforedit = 0;
         if (user.getId() != 0) {
-            
+
             usertypeforedit = (int) session.getAttribute("role");
             System.out.println("user: " + usertypeforedit);
             List<AddressBean> addresses = user.getAddresses();
@@ -208,21 +213,29 @@ public class HomeController {
         return new ModelAndView("redirect:/EditDetails");
     }
 
-    @RequestMapping("/torecentlyregistered")
-    public ModelAndView torecentlyregistered() {
-        return new ModelAndView("redirect:/getRecentUsers");
+    @RequestMapping(path = "/torecentlyregistered")
+    public String torecentlyregistered() {
+        return "recentlyRegisteredUsers";
     }
 
-    @RequestMapping("/getRecentUsers")
+    @RequestMapping(path = "/getRecentUsers", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
     public String getRecentUsers() {
         ArrayList<UserBean> recentUsers = signupServiceImpl.getRecentUsersList();
-        System.out.println(recentUsers.get(0).getEmail());
+        // System.out.println(recentUsers.get(0).getEmail());
+
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
         String JSONObject = gson.toJson(recentUsers);
         return JSONObject;
-    }
+        // GsonBuilder gsonBuilder = new GsonBuilder();
+        // Gson gson = gsonBuilder.excludeFieldsWithoutExposeAnnotation().create();
+        // JsonObject json = new JsonObject();
+        // json.add("data", gson.toJsonTree(recentUsers));
 
+        // return json;
+    }
+    
     @RequestMapping("/CheckEmailAvailability")
     @ResponseBody
     public String CheckEmailAvailability(@RequestParam("email") String email) {

@@ -49,7 +49,7 @@ public class UserBean {
     @Expose
     @Column(nullable = true)
     private String profilepic;
-
+    
     public String getProfilepic() {
         return profilepic;
     }
