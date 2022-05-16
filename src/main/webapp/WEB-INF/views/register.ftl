@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- Required meta tags-->
     <meta charset="UTF-8">
@@ -65,7 +64,11 @@
                 <div class="card-heading">
                     <h2 class="title">User Registration form</h2>
             </div>
-                
+
+                <div>
+                    <p><#if error??>${error}</#if></p>
+        
+                </div>
                 <#--  <p style="text-align:center"><c:out value="${errMsg}"/></p>  -->
                 <div class="card-body">
                     <form action="Signup" method="POST" id="register" enctype="multipart/form-data">

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import springusermanagement.dao.UserDao;
-import springusermanagement.dao.UserDaoImpl;
 import springusermanagement.model.AddressBean;
 import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
@@ -61,7 +60,7 @@ public class SignupServiceImpl implements SignupService {
     }
 
     public void updateUser(UserBean user) {
-
+        
         userDaoimpl.updateuser(user);
     }
 

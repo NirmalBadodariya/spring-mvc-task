@@ -12,25 +12,25 @@ import springusermanagement.model.UserBean;
 
 public interface UserDao<T> {
     
-    public T addNewUser(UserBean user);
+     T addNewUser(UserBean user);
 
-    public int checkUser(UserBean user);
+     int checkUser(UserBean user);
 
-    public ArrayList<UserBean> getUserDetails();
+     ArrayList<UserBean> getUserDetails();
 
-    public void deleteUser(T user) throws SecurityException, RollbackException, HeuristicMixedException,
+     void deleteUser(T user) throws SecurityException, RollbackException, HeuristicMixedException,
             HeuristicRollbackException, SystemException, javax.transaction.RollbackException;
 
-    public UserBean getLoggedinUserDetails(String email);
+     UserBean getLoggedinUserDetails(String email);
 
-    public void updateuser(UserBean user);
+     void updateuser(UserBean user);
 
-    public boolean checkForgotpassDetails(String dob, String securityAns);
+     boolean checkForgotpassDetails(String dob, String securityAns);
 
-    public void changePass(ForgotPassBean forgotPass);
+     void changePass(ForgotPassBean forgotPass);
 
-    public ArrayList<UserBean> getRecentUsersList();
+     ArrayList<UserBean> getRecentUsersList();
 
-    public boolean checkEmail(String email);
+     boolean checkEmail(String email);
 
 }

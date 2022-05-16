@@ -1,16 +1,21 @@
 package springusermanagement.dao;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Query;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,34 +24,24 @@ import springusermanagement.encryotion.AES;
 import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
 import springusermanagement.model.UserRoles;
-import javax.persistence.*;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 
 @Repository
 @Transactional
 public class UserDaoImpl<T> implements UserDao<T> {
 
+    Logger log = Logger.getLogger(UserDaoImpl.class.getName());
+
+    public void init() {
+
+        BasicConfigurator.configure();
+
+    }
+
     @Autowired
     protected SessionFactory factory;
 
-    // public SessionFactory getFactory() {
-    // return factory;
-    // }
-
-    // public void setFactory(SessionFactory factory) {
-    // this.factory = factory;
-    // }
-
-    // Session session = factory.openSession();
-    private Class<T> type;
     @Autowired
     private HibernateTemplate hibernateTemplate;
-    // Session session = hibernateTemplate.getSessionFactory().openSession();
-    // @Autowired
-    // UserRoles roles = new UserRoles();
 
     @Transactional
     public T addNewUser(UserBean user) {
@@ -54,42 +49,39 @@ public class UserDaoImpl<T> implements UserDao<T> {
         final String secretKey = "ssshhhhhhhhhhh!!!!";
         String encryptedString = AES.encrypt(user.getPass(), secretKey);
         user.setPass(encryptedString);
-        // String SQL_QUERY = " insert into UserRoles (role) values (:givenrole)";
-        // hibernateTemplate.getSessionFactory().openSession().createSQLQuery(SQL_QUERY).setParameter("givenrole",
-        // 1)
-        // .executeUpdate();
-        // roles.setRole(1);
-
-        // roles.setRole(1);
-        // session.save(roles);
-        // roles.setUid(user.getId());
 
         return (T) hibernateTemplate.save(user);
     }
 
     public int checkUser(UserBean user) {
-        System.out.println("uid: " + user.getId());
+        log.info("uid: " + user.getId());
         String QUERY1 = " from UserRoles  where user_id=" + user.getId();
-        System.out.println(QUERY1);
+        log.info(QUERY1);
         List<UserRoles> role = (List<UserRoles>) hibernateTemplate.find(QUERY1);
-        System.out.println("eolw: " + role.get(0).getRole());
+        log.info("role: " + role.get(0).getRole());
 
         final String secretKey = "ssshhhhhhhhhhh!!!!";
         String encryptedString = AES.encrypt(user.getPass(), secretKey);
-        System.out.println(encryptedString);
-        System.out.println(user.getEmail());
+        log.info(encryptedString);
+        log.info(user.getEmail());
 
         int usertype = 0;
         String QUERY = " from UserBean as o where o.email=?0 and o.pass=?1";
-        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY)
-                .setParameter(0, user.getEmail())
-                .setParameter(1, encryptedString).list();
-        // Query query = session.createQuery(SQL_QUERY);
-        // List list = (List) hibernateTemplate.find(SQL_QUERY, email, pass);
+        List list = new ArrayList<>();
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        Session session;
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                list = session.createQuery(QUERY)
+                        .setParameter(0, user.getEmail())
+                        .setParameter(1, encryptedString).list();
+            }
+        }
 
-        if ((list != null) && (list.size() > 0) && role.get(0).getRole() == 1) {
+        if (list != null && list.size() > 0 && role.get(0).getRole() == 1) {
             usertype = 1;
-        } else if ((list != null) && (list.size() > 0) && role.get(0).getRole() == 2) {
+        } else if (list != null && list.size() > 0 && role.get(0).getRole() == 2) {
             usertype = 2;
 
         }
@@ -98,10 +90,15 @@ public class UserDaoImpl<T> implements UserDao<T> {
 
     public ArrayList<UserBean> getUserDetails() {
         ArrayList<UserBean> userDetails = new ArrayList<>();
-        Session session = hibernateTemplate.getSessionFactory().openSession();
-        Query query = session.createQuery("from UserBean");
-        userDetails = (ArrayList<UserBean>) query.getResultList();
-
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        Session session;
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                Query query = session.createQuery("from UserBean");
+                userDetails = (ArrayList<UserBean>) query.getResultList();
+            }
+        }
         return userDetails;
     }
 
@@ -114,28 +111,47 @@ public class UserDaoImpl<T> implements UserDao<T> {
 
     public UserBean getLoggedinUserDetails(String email) {
         ArrayList<UserBean> userDetails = new ArrayList<>();
-        Session session = hibernateTemplate.getSessionFactory().openSession();
-        Query query = session.createQuery("from UserBean where email=:email").setParameter("email", email);
-        userDetails = (ArrayList<UserBean>) query.getResultList();
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        Query query = null;
+        Session session;
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                query = session.createQuery("from UserBean where email=:email").setParameter("email", email);
+                userDetails = (ArrayList<UserBean>) query.getResultList();
+            }
+        }
         System.out.println("pass: " + userDetails.get(0).getPass());
         final String secretKey = "ssshhhhhhhhhhh!!!!";
         String decryptedPass = AES.decrypt(userDetails.get(0).getPass(), secretKey);
         userDetails.get(0).setPass(decryptedPass);
-        System.out.println("decc: " + userDetails.get(0).getPass());
+        log.info("decc: " + userDetails.get(0).getPass());
         return userDetails.get(0);
     }
 
     public void updateuser(UserBean user) {
+        final String secretKey = "ssshhhhhhhhhhh!!!!";
+        String encryptedString = AES.encrypt(user.getPass(), secretKey);
+        log.info(encryptedString);
+        user.setPass(encryptedString);
         hibernateTemplate.merge(user);
     }
 
     public boolean checkForgotpassDetails(String dob, String securityAns) {
         boolean isValid = false;
-        String QUERY = " from UserBean as o where o.dob=?0 and o.securityAns=?1";
-        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY).setParameter(0, dob)
-                .setParameter(1, securityAns).list();
+        List list = new ArrayList<>();
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        Session session;
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                String QUERY = " from UserBean as o where o.dob=?0 and o.securityAns=?1";
+                list = session.createQuery(QUERY).setParameter(0, dob)
+                        .setParameter(1, securityAns).list();
+            }
+        }
 
-        if ((list != null) && (list.size() > 0)) {
+        if (list != null && list.size() > 0) {
             isValid = true;
         }
         return isValid;
@@ -143,55 +159,71 @@ public class UserDaoImpl<T> implements UserDao<T> {
 
     @Transactional
     public void changePass(ForgotPassBean forgotPass) {
-        Session session = hibernateTemplate.getSessionFactory().openSession();
-        Transaction tx = session.beginTransaction();
+        Session session;
         final String secretKey = "ssshhhhhhhhhhh!!!!";
         String encryptedString = AES.encrypt(forgotPass.getNewPass(), secretKey);
+        Transaction tx = null;
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                tx = session.beginTransaction();
+                Query q = session
+                        .createQuery("update UserBean set pass=:newPass where dob=:dob and securityAns=:securityAns")
+                        .setParameter("newPass", encryptedString)
+                        .setParameter("dob", forgotPass.getDob())
+                        .setParameter("securityAns", forgotPass.getSecurityAns());
 
-        Query q = session.createQuery("update UserBean set pass=:newPass where dob=:dob and securityAns=:securityAns")
-                .setParameter("newPass", encryptedString)
-                .setParameter("dob", forgotPass.getDob())
-                .setParameter("securityAns", forgotPass.getSecurityAns());
-
-        q.executeUpdate();
-        tx.commit();
+                q.executeUpdate();
+                tx.commit();
+            }
+        }
     }
 
     public ArrayList<UserBean> getRecentUsersList() {
-        Session session = hibernateTemplate.getSessionFactory().openSession();
+
         ArrayList<UserBean> userDetails = new ArrayList<>();
+        List<Object[]> rows = new ArrayList<>();
+        Session session;
+        Transaction tx = null;
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
+                tx = session.beginTransaction();
+                SQLQuery query = session
+                        .createSQLQuery("select * from users where CreatedTime  >= NOW() - INTERVAL 1 DAY");
+                rows = query.list();
+                for (int i = 0; i < rows.size(); i++) {
+                    UserBean user = new UserBean();
+                    user.setId(Integer.parseInt(rows.get(i)[0].toString()));
+                    user.setEmail(rows.get(i)[2].toString());
+                    user.setFirstName(rows.get(i)[3].toString());
+                    userDetails.add(user);
+                }
+                tx.commit();
 
-        // Get All Employees
-        Transaction tx = session.beginTransaction();
-        SQLQuery query = session
-                .createSQLQuery("select * from users where CreatedTime  >= NOW() - INTERVAL 1 DAY");
-        List<Object[]> rows = query.list();
-        // System.out.println(Integer.parseInt(rows.get(0)[0].toString()));
-        // System.out.println(rows.get(0)[1].toString());
-        // System.out.println(rows.get(0)[2].toString());
-        // System.out.println(rows.size());
-        // userDetails.get(i).setId(Integer.parseInt(rows.get(i)[0].toString()));
-
-        for (int i = 0; i < rows.size(); i++) {
-            UserBean user = new UserBean();
-            user.setId(Integer.parseInt(rows.get(i)[0].toString()));
-            user.setEmail(rows.get(i)[2].toString());
-            user.setFirstName(rows.get(i)[3].toString());
-            userDetails.add(user);
+            }
         }
-        tx.commit();
         return userDetails;
     }
 
     public boolean checkEmail(String email) {
         boolean emailExists = false;
-        String QUERY = " from UserBean as o where o.email=?0";
-        List list = hibernateTemplate.getSessionFactory().openSession().createQuery(QUERY)
-                .setParameter(0, email).list();
-        // Query query = session.createQuery(SQL_QUERY);
-        // List list = (List) hibernateTemplate.find(SQL_QUERY, email, pass);
+        SessionFactory factory = hibernateTemplate.getSessionFactory();
+        Session session;
+        List list = new ArrayList<>();
+        if (factory != null) {
+            session = factory.openSession();
+            if (session != null) {
 
-        if ((list != null) && (list.size() > 0)) {
+                String QUERY = " from UserBean as o where o.email=?0";
+                list = session.createQuery(QUERY)
+                        .setParameter(0, email).list();
+
+            }
+        }
+        if (list != null && list.size() > 0) {
             emailExists = true;
         }
         return emailExists;

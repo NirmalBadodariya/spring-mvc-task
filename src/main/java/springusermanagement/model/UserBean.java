@@ -1,7 +1,5 @@
 package springusermanagement.model;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,16 +9,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 import com.google.gson.annotations.Expose;
-
-import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "users")
@@ -30,16 +27,20 @@ public class UserBean {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Expose
+    @Size(min = 2, max = 30)
     private String firstName;
     @Expose
     private String lastName;
     @Expose
+    @NotEmpty
+    @Email
     private String email;
     @Expose
     private String phone;
     @Expose
     private String gender;
     @Expose
+    @Past
     private String dob;
     @Expose
     private String pass;
@@ -49,7 +50,7 @@ public class UserBean {
     @Expose
     @Column(nullable = true)
     private String profilepic;
-    
+
     public String getProfilepic() {
         return profilepic;
     }
