@@ -13,8 +13,10 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.google.gson.annotations.Expose;
@@ -27,24 +29,29 @@ public class UserBean {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Expose
-    @Size(min = 2, max = 30)
+    @Size(min = 10, max = 30)
+    @NotBlank(message = "FirstName Cannot be blank")
     private String firstName;
+    @NotBlank(message = "LastName Cannot be blank")
     @Expose
     private String lastName;
     @Expose
     @NotEmpty
-    @Email
+    @NotBlank(message = "email Cannot be blank")
+    @Email(message = "Please enter valid email")
     private String email;
     @Expose
+    @NotBlank(message = "phone Cannot be blank")
     private String phone;
     @Expose
     private String gender;
     @Expose
-    @Past
+    @Past(message = "cannot be more than this time")
     private String dob;
     @Expose
     private String pass;
     @Expose
+
     private String securityAns;
     @Lob
     @Expose
@@ -73,7 +80,7 @@ public class UserBean {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRoles> roles;
-    
+
     public List<UserRoles> getRoles() {
         return roles;
     }

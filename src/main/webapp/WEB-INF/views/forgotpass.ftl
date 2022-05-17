@@ -15,9 +15,11 @@
                   <h2 class="text-center">Forgot Password?</h2>
                   <p>You can reset your password here.</p>
                   <div class="panel-body">
-
+                  <div>
+                    <h4 style="color:red"><#if didntmatch??>${didntmatch}</#if></h4>
+                  </div>
                     <form action="ForgotPass" id="register-form" role="form" autocomplete="off" class="form" method="post">
-
+                      
                       <div class="form-group">
                         <div class="input-group">
                           <p>Enter Your DOB Here:</p>

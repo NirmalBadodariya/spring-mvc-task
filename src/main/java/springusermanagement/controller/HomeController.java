@@ -1,5 +1,6 @@
 package springusermanagement.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -43,7 +44,7 @@ public class HomeController {
 
     @RequestMapping(path = { "/", "/index" })
     public String loginPage() {
-        log.info("indexccccccccccccccccc");
+
         return "index";
 
     }
@@ -60,42 +61,61 @@ public class HomeController {
     }
 
     @RequestMapping({ "/userHome", "/backToHome" })
-    public String userHome() {
-        return "userHome";
+    public String userHome(HttpSession session) {
+        if ((int) session.getAttribute("role") == 0) {
+            return "userHome";
+        } else {
+            return "index";
+        }
     }
 
     @RequestMapping("/adminHome")
-    public String adminHome() {
-        return "adminHome";
+    public String adminHome(HttpSession session) {
+        if ((int) session.getAttribute("role") == 2 || session.getAttribute("role") == null) {
+            return "adminHome";
+        } else {
+            return "index";
+        }
     }
 
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
     public String signup(@Valid @ModelAttribute UserBean user, BindingResult bindingResult, HttpSession session,
             @RequestParam("aid") String[] id,
-            @RequestParam("profileimage") MultipartFile profilepic, Model model)
-            throws Exception {
-            BasicConfigurator.configure();
-        
-
-        StringBuilder errorList = new StringBuilder();
+            @RequestParam("profileimage") MultipartFile profilepic, Model model) {
+        BasicConfigurator.configure();
+        int usertypeforedit = 0;
+        System.out.println("86th line");
         if (bindingResult.hasErrors()) {
+            System.out.println("backend fail");
+
             List<FieldError> error = bindingResult.getFieldErrors();
+            System.out.println(error);
+            List<String> errorList = new ArrayList();
             for (FieldError err : error) {
-                errorList.append(err.getDefaultMessage());
+                System.out.println("came if backend fail");
+                errorList.add(err.getDefaultMessage());
                 model.addAttribute("error", errorList);
                 model.addAttribute("user", user);
-                return "register";
             }
+            return "register";
+        } else {
+            System.out.println("came in else");
         }
-        session.setAttribute("user", user);
 
-        String profile = Base64.getEncoder().encodeToString(profilepic.getBytes());
+        session.setAttribute("user", user);
+        String profile = null;
+        try {
+            profile = Base64.getEncoder().encodeToString(profilepic.getBytes());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         if (profile != null) {
             user.setProfilepic(profile);
         }
-        int usertypeforedit = 0;
+
         if (user.getId() != 0) {
-            
+
             usertypeforedit = (int) session.getAttribute("role");
             System.out.println("user: " + usertypeforedit);
             List<AddressBean> addresses = user.getAddresses();
@@ -108,7 +128,7 @@ public class HomeController {
                 }
             }
 
-            System.err.println("Update User");
+            System.err.println("Update User");  
             for (AddressBean address : user.getAddresses()) {
                 address.setUserBean(user);
             }
@@ -118,13 +138,16 @@ public class HomeController {
             signupServiceImpl.updateUser(user);
 
         } else {
+
             System.err.println("New User");
             signupServiceImpl.addNewUser(user);
         }
         if (usertypeforedit == 0) {
-            log.info("user Logged in");
+            session.setAttribute("role", 0);
+            System.out.println("user Logged in");
             return "redirect:userHome";
         } else if (usertypeforedit == 2) {
+            System.out.println("Admin Logged in");
             log.info("Admin Logged in");
             return "redirect:adminHome";
 
@@ -133,8 +156,9 @@ public class HomeController {
     }
 
     @RequestMapping(path = "/Login", method = RequestMethod.POST)
-    public String login(@RequestParam String email, @RequestParam String pass, HttpSession session) {
+    public String login(@RequestParam String email, @RequestParam String pass, HttpSession session, Model model) {
         int usertype = signupServiceImpl.checkUser(email, pass);
+        String noUser = "noUser";
         session.setAttribute("email", email);
         if (usertype == 1) {
             session.setAttribute("role", 0);
@@ -145,6 +169,7 @@ public class HomeController {
             return "redirect:adminHome";
 
         } else {
+            model.addAttribute(noUser, "User Doesn't Exist");
             return "index";
         }
     }
@@ -188,22 +213,26 @@ public class HomeController {
 
         return "redirect:register";
     }
-
+    
     @RequestMapping(path = "/ForgotPass", method = RequestMethod.POST)
-    public String forgotPass(@RequestParam String dob, @RequestParam String securityAns, HttpSession session) {
+    public String forgotPass(@RequestParam String dob, @RequestParam String securityAns, HttpSession session,
+            Model model) {
         boolean isValid = signupServiceImpl.checkForgotpassDetails(dob, securityAns);
+        String didntmatch = "didntmatch";
         session.setAttribute("dob", dob);
         session.setAttribute("securityAns", securityAns);
         if (isValid == true) {
 
             return "changePass";
         } else {
+            model.addAttribute(didntmatch, "User Doesn't Exist");
             return "forgotpass";
         }
     }
 
     @RequestMapping(path = "/ChangePass", method = RequestMethod.POST)
     public String changePass(@RequestParam String newPass, HttpSession session) {
+
         ForgotPassBean forgotPass = new ForgotPassBean();
         String dob = (String) session.getAttribute("dob");
         String securityAns = (String) session.getAttribute("securityAns");

@@ -31,6 +31,9 @@
 		      		<span class="fa fa-user-o"></span>
 		      	</div>
 		      	<h3 class="text-center mb-4">Sign In</h3>
+				  <div>
+					<h4 style="color:red"><#if noUser??>${noUser}</#if></h4>
+				</div>
 			<form action="Login" class="login-form" method="post">
 		      		<div class="form-group">
 		      			<input type="email" class="form-control rounded-left" placeholder="email" required name="email">
@@ -59,7 +62,7 @@
 			</div>
 		</div>
 	</section>
-
+	
 
 	</body>
 </html>

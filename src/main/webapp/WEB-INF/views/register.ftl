@@ -66,7 +66,7 @@
             </div>
 
                 <div>
-                    <p><#if error??>${error}</#if></p>
+                    <h1 style="color:red"><#if error??>${error}</#if></h1>
         
                 </div>
                 <#--  <p style="text-align:center"><c:out value="${errMsg}"/></p>  -->

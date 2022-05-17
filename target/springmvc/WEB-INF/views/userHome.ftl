@@ -46,14 +46,14 @@
             <div class="col-lg-4">
               <nav class="site-navigation text-right ml-auto " role="navigation">
                 <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                  <li><a href="index.jsp" class="nav-link">Home</a></li>
+                  <li><a href="userHome" class="nav-link">Home</a></li>
                   <li><a href="EditDetails" class="nav-link">Profile</a></li>
                 </ul>
               </nav>
             </div>
             <div class="col-lg-4 text-center">
               <div class="site-logo">
-                <a href="index.html">UserHome</a>
+                <a href="userHome">UserHome</a>
               </div>
 
   
@@ -72,9 +72,6 @@
         </div>
 
       </header>
-    
-	
-    <div class="hero" style="background-image: url('images/hero_1.jpg');"></div>
   
 </body>
 </html>

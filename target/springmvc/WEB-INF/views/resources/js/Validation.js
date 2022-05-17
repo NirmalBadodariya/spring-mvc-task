@@ -1,13 +1,13 @@
 $("#register").validate({
     rules: {
-        firstName: {
-            required: true,
-            lettersonly: true
-        },
-        lastName: {
-            required: true,
-            lettersonly: true
-        },
+        // firstName: {
+        //     required: true,
+        //     lettersonly: true
+        // },
+        // lastName: {
+        //     required: true,
+        //     lettersonly: true
+        // },
         pass: {
             required: true,
             passwordFormatCheck: true,
@@ -37,14 +37,14 @@ $("#register").validate({
 
     },
     messages: {
-        firstName: {
-            required: "Please enter your firstname",
-            lettersonly: "Please enter valid firstname",
-        },
-        lastName: {
-            required: "Please enter your lastname",
-            lettersonly: "Please enter valid lastname",
-        },
+        // firstName: {
+        //     required: "Please enter your firstname",
+        //     lettersonly: "Please enter valid firstname",
+        // },
+        // lastName: {
+        //     required: "Please enter your lastname",
+        //     lettersonly: "Please enter valid lastname",
+        // },
         pass: {
             required: "Please provide a password",
         },

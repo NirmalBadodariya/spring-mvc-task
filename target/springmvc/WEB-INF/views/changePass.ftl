@@ -59,7 +59,7 @@
       <div class="container d-flex justify-content-center align-items-center vh-100">
          <div class="bg-white text-center p-5 mt-3 center">
             <h3>Change Password </h3>
-            <form class="pb-3" action="ChangePass" method="post">
+            <form class="pb-3" id="changePass" action="ChangePass" method="post">
                <div class="form-group">
                   <input type="text" name="newPass" class="form-control" placeholder="New Password*" required>
                </div>
