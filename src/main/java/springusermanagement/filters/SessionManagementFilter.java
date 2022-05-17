@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebFilter(urlPatterns = { "/userHome" , "/backToHome" })
+@WebFilter(urlPatterns = { "/userHome", "/backToHome", "/adminHome" })
 public class SessionManagementFilter implements Filter {
-
+        
     public void doFilter(ServletRequest req, ServletResponse res,
             FilterChain chain) throws java.io.IOException, ServletException {
         System.out.println("Filter called");

@@ -71,9 +71,9 @@ public class UserBean {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressBean> addresses;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRoles> roles;
-
+    
     public List<UserRoles> getRoles() {
         return roles;
     }

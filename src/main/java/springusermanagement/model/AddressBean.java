@@ -20,9 +20,9 @@ public class AddressBean {
     private String state;
     private int pincode;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private UserBean userBean;
-
+    
     public UserBean getUserBean() {
         return userBean;
     }

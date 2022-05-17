@@ -40,7 +40,7 @@
             <div class="col-lg-4">
               <nav class="site-navigation text-right ml-auto " role="navigation">
                 <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                  <li class="active"><a href="adminHome1.jsp" class="nav-link">Home</a></li>
+                  <li class="active"><a href="adminHome" class="nav-link">Home</a></li>
                   <li><a href="EditDetails">Profile</a></li>
                   <li><button id="showUserDetails" class="btn btn-info">showUserDetails</button></li>
                 </ul>
@@ -48,7 +48,7 @@
             </div>
             <div class="col-lg-4 text-center">
               <div class="site-logo">
-                <a href="adminHome1.jsp">AdminHome</a>
+                <a href="adminHome">AdminHome</a>
               </div>
                 
 
@@ -57,7 +57,7 @@
             <div class="col-lg-4">
               <nav class="site-navigation text-left mr-auto " role="navigation">
                 <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                  <li><a href="SessionStore">AddNewUser</a></li>
+                  <li><a href="register">AddNewUser</a></li>
                   <li><a href="torecentlyregistered">newUsersList</a></li>
                   <li><a href="Logout">Logout</a></li>
 
@@ -140,11 +140,5 @@ function EditUserDetails(email) {
  
             
 </script>
-
-    <#--  <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.sticky.js"></script>
-    <script src="js/main.js"></script>  -->
   </body>
 </html>

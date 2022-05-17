@@ -31,24 +31,21 @@ import org.springframework.web.servlet.ModelAndView;
 import springusermanagement.model.AddressBean;
 import springusermanagement.model.ForgotPassBean;
 import springusermanagement.model.UserBean;
+import springusermanagement.model.UserRoles;
 import springusermanagement.service.SignupService;
 
 @Controller
 public class HomeController {
     Logger log = Logger.getLogger(HomeController.class.getName());
 
-    public void init() {
-
-        BasicConfigurator.configure();
-
-    }
-
     @Autowired
     private SignupService signupServiceImpl;
 
     @RequestMapping(path = { "/", "/index" })
     public String loginPage() {
+        log.info("indexccccccccccccccccc");
         return "index";
+
     }
 
     @RequestMapping("/register")
@@ -73,9 +70,13 @@ public class HomeController {
     }
 
     @RequestMapping(path = "/Signup", method = RequestMethod.POST)
-    public String signup(@Valid @ModelAttribute UserBean user, HttpSession session, @RequestParam("aid") String[] id,
-            @RequestParam("profileimage") MultipartFile profilepic, BindingResult bindingResult, Model model)
+    public String signup(@Valid @ModelAttribute UserBean user, BindingResult bindingResult, HttpSession session,
+            @RequestParam("aid") String[] id,
+            @RequestParam("profileimage") MultipartFile profilepic, Model model)
             throws Exception {
+            BasicConfigurator.configure();
+        
+
         StringBuilder errorList = new StringBuilder();
         if (bindingResult.hasErrors()) {
             List<FieldError> error = bindingResult.getFieldErrors();
@@ -94,7 +95,7 @@ public class HomeController {
         }
         int usertypeforedit = 0;
         if (user.getId() != 0) {
-
+            
             usertypeforedit = (int) session.getAttribute("role");
             System.out.println("user: " + usertypeforedit);
             List<AddressBean> addresses = user.getAddresses();
@@ -111,6 +112,9 @@ public class HomeController {
             for (AddressBean address : user.getAddresses()) {
                 address.setUserBean(user);
             }
+            for (UserRoles roles : user.getRoles()) {
+                roles.setUser(user);
+            }
             signupServiceImpl.updateUser(user);
 
         } else {
@@ -118,9 +122,10 @@ public class HomeController {
             signupServiceImpl.addNewUser(user);
         }
         if (usertypeforedit == 0) {
-
+            log.info("user Logged in");
             return "redirect:userHome";
         } else if (usertypeforedit == 2) {
+            log.info("Admin Logged in");
             return "redirect:adminHome";
 
         }

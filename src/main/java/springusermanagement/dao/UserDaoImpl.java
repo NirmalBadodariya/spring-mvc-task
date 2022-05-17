@@ -31,12 +31,6 @@ public class UserDaoImpl<T> implements UserDao<T> {
 
     Logger log = Logger.getLogger(UserDaoImpl.class.getName());
 
-    public void init() {
-
-        BasicConfigurator.configure();
-
-    }
-
     @Autowired
     protected SessionFactory factory;
 
@@ -54,6 +48,8 @@ public class UserDaoImpl<T> implements UserDao<T> {
     }
 
     public int checkUser(UserBean user) {
+        BasicConfigurator.configure();
+
         log.info("uid: " + user.getId());
         String QUERY1 = " from UserRoles  where user_id=" + user.getId();
         log.info(QUERY1);
@@ -89,6 +85,8 @@ public class UserDaoImpl<T> implements UserDao<T> {
     }
 
     public ArrayList<UserBean> getUserDetails() {
+        BasicConfigurator.configure();
+
         ArrayList<UserBean> userDetails = new ArrayList<>();
         SessionFactory factory = hibernateTemplate.getSessionFactory();
         Session session;
@@ -110,6 +108,8 @@ public class UserDaoImpl<T> implements UserDao<T> {
     }
 
     public UserBean getLoggedinUserDetails(String email) {
+        BasicConfigurator.configure();
+
         ArrayList<UserBean> userDetails = new ArrayList<>();
         SessionFactory factory = hibernateTemplate.getSessionFactory();
         Query query = null;
@@ -119,13 +119,13 @@ public class UserDaoImpl<T> implements UserDao<T> {
             if (session != null) {
                 query = session.createQuery("from UserBean where email=:email").setParameter("email", email);
                 userDetails = (ArrayList<UserBean>) query.getResultList();
+                System.out.println("pass: " + userDetails.get(0).getPass());
+                final String secretKey = "ssshhhhhhhhhhh!!!!";
+                String decryptedPass = AES.decrypt(userDetails.get(0).getPass(), secretKey);
+                userDetails.get(0).setPass(decryptedPass);
+                log.info("decc: " + userDetails.get(0).getPass());
             }
         }
-        System.out.println("pass: " + userDetails.get(0).getPass());
-        final String secretKey = "ssshhhhhhhhhhh!!!!";
-        String decryptedPass = AES.decrypt(userDetails.get(0).getPass(), secretKey);
-        userDetails.get(0).setPass(decryptedPass);
-        log.info("decc: " + userDetails.get(0).getPass());
         return userDetails.get(0);
     }
 
@@ -136,7 +136,7 @@ public class UserDaoImpl<T> implements UserDao<T> {
         user.setPass(encryptedString);
         hibernateTemplate.merge(user);
     }
-
+        
     public boolean checkForgotpassDetails(String dob, String securityAns) {
         boolean isValid = false;
         List list = new ArrayList<>();

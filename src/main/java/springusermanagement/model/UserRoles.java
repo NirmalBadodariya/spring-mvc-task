@@ -1,6 +1,7 @@
 package springusermanagement.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -16,7 +17,7 @@ public class UserRoles {
     private UserBean user;
 
     private int role = 1;
-
+    
     @Override
     public String toString() {
         return "UserRoles [id=" + id + ", role=" + role + ", user=" + user + "]";
